@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec gsc -:dar,t8,f8,-8
