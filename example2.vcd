@@ -1,0 +1,38 @@
+BEGIN:VCARD
+VERSION:3.0
+FN:Dr. Peter Pan
+N:Pan;Peter;Nathan,Rupert;Dr.;Jr.,M.D.,A.C.P.;
+NICKNAME:ppan
+ADR;TYPE=work,pref:;;12 Foo House,Bar street;London;;SE01 345;United Kingdom
+ADR;TYPE=home:;;Asbeshaus,Foostrasse 77;Chur;;1234;Switzerland
+TEL;TYPE=home,msg,voice:-
+TEL;TYPE=cell,pcs,voice:+447787654321
+TEL;TYPE=work,pref,msg,voice:+442321876543
+EMAIL:pp@ppan.ch
+TZ:+01:00
+TITLE:president
+ROLE:president\, CTO
+ORG:Pan AG
+NOTE:I like swimming.\n
+ OpenPGP ID/fingerprint: DEC1 DEAF FACE DDEC ADED  EEDA DDED CAFE FEDB EEF0\n
+ Personal: http://ppan.ch/\n
+ Work: http://foobar.com/\n
+ Work address:\n
+  12 Foo House\, Bar street\n
+  London\n
+  SE01 345\n
+  United Kingdom\n
+ Home address:\n
+  Asbeshaus\, Foostrasse 77\n
+  Chur\n
+  1234\n
+  Switzerland
+PRODID:https://github.com/pflanze/vcard-scm
+REV:1970-01-01
+UID:w344dfv973c2ut5365znxu52jd
+URL:http://ppan.ch/
+CLASS:PRIVATE
+KEY;TYPE=PGP:http://ppan.ch/pgpkey-DEC1-DEAF-FACE-DDEC-ADED--EEDA-DDED-CAFE-FEDB-EEF0.asc
+END:VCARD
+
+OPENPGP4FPR:DEC1DEAFFACEDDECADEDEEDADDEDCAFEFEDBEEF0
