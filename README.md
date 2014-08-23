@@ -112,5 +112,5 @@ open me.scm, add your definition, then
     > (display (cjcard))
     > (showQR (cjcard))
 
-and tell me whether you like it :)
+and tell me whether you like it!
 
