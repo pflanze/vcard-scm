@@ -62,6 +62,8 @@
   (c/load "lib/cj-shortcuts")
   (c/load "lib/cj-env-2")
 
+  (c/load "lib/compat") ;; uses for..< from cj-env-2
+
   (c/load "lib/cj-math")
 
   ;; only needed at runtime (when running the tests)

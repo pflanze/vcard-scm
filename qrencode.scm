@@ -16,7 +16,7 @@
 					   arguments: `(,@opts "-o" ,filepath)))))
 	 (parameterize ((current-output-port p))
 		       (display str))
-	 (close-port p)
+	 (close-output-port p)
 	 (assert (zero? (process-status p))))))
 
 (def print-QR-eps-file (print-QR/ "-t" "EPS"))
