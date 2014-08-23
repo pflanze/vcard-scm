@@ -84,8 +84,7 @@ Git repository, do the following:
     $ cd ..
     $ git init myvcard
     $ cd myvcard
-    $ ln -s ../vcard-scm/.gambcini
-    $ ln -s ../vcard-scm/run
+    $ ln -s ../vcard-scm/.gambcini ../vcard-scm/run .
     $ mkdir .gambc
     $ cat > .gambc/load.scm # then paste the following:
 
