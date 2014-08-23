@@ -26,7 +26,8 @@ Debian derivates should work as above, otherwise you'll have to find
 corresponding packages
 ([Gambit-C](https://en.wikipedia.org/wiki/Gambit_(scheme_implementation))
 Scheme system, C compiler,
-[qrencode](http://fukuchi.org/works/qrencode/)). 
+[qrencode](http://fukuchi.org/works/qrencode/)). You can omit qrencode
+if you don't want to generate QR codes.
 
 NOTE that some of the libraries from chj-schemelib might only work on
 Linux (you'll get compilation or test failures in the next
