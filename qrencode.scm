@@ -23,3 +23,9 @@
 
 (def print-QR-png-file (print-QR/ "-t" "PNG" "-s" "6"))
 
+
+(def (showQR #(string? str))
+     (let ((path "showQR.png"))
+       (print-QR-png-file path str)
+       (xxsystem "display" path)))
+

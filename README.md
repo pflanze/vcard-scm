@@ -21,7 +21,10 @@ This is currently just a VCard generator, not a parser.
 
 ## Installation of dependencies on Debian
 
-    $ sudo apt-get install git gambc build-essential qrencode 
+    $ sudo apt-get install git gambc build-essential qrencode imagemagick
+
+imagemagick is only used for `showQR`, also you can omit qrencode if
+you don't want to generate QR codes.
 
 ## Installation of dependencies  on other systems
 
@@ -29,8 +32,8 @@ Debian derivates should work as above, otherwise you'll have to find
 corresponding packages
 ([Gambit-C](https://en.wikipedia.org/wiki/Gambit_(scheme_implementation))
 Scheme system, C compiler,
-[qrencode](http://fukuchi.org/works/qrencode/)). You can omit qrencode
-if you don't want to generate QR codes.
+[qrencode](http://fukuchi.org/works/qrencode/)). As said above,
+qrencode and imagemagick are optional.
 
 NOTE that some of the libraries from chj-schemelib might only work on
 Linux (you'll get compilation or test failures in the next section if
@@ -65,6 +68,7 @@ again:
     $ ./run
     > (display (example2 #f)) ;; false for private, 
     > (display (example2 #t)) ;; true for public
+    > (showQR (example2 #f)) ;; show QR code on screen
 
 To write it out as .vcd and QR code files in the current working
 directory:
@@ -106,7 +110,7 @@ open me.scm, add your definition, then
 ..and send me email to the address in the card show by
 
     > (display (cjcard))
-    > (printcard "cjcard" (cjcard))
+    > (showQR (cjcard))
 
 and tell me whether you like it :)
 
