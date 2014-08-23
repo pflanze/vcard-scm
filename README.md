@@ -1,19 +1,22 @@
 # vcard-scm: VCard files from Scheme
 
-This is currently just a VCard generator, not parser. It attempts to
-support OpenPGP keys well.
+This is currently just a VCard generator, not a parser.
 
 * `vcard.scm`: the definition of the VCard file format.
 
-* `vcard-easy.scm`: an abstraction on top of the bare VCard structures
-  that takes care of proper (as far as this author can say) embedding
-  of data so that it has the best chance to actually be shown to the
-  recipient. (Suggestions for improvements welcome!)
+* `vcard-easy.scm`: an abstraction that simplifies the data format of
+  vcard a bit, and more importantly, tries to fill it into a vcard
+  container in a way that makes it most likely for users of today's
+  apps to see in the right way. It also tries to embed OpenPGP
+  fingerprints in the best way possible.
+
+  (Suggestions for improvements welcome, this depends on your
+  feedback, as I don't have access to every app out there!)
 
 * `qrencode.scm`: generate QR codes from strings by using the qrencode
   command line tool.
 
-* `examples.scm`: how to make use of all of this.
+* `examples.scm`: how to make use of the above.
 
 
 ## Installation of dependencies on Debian
@@ -30,9 +33,9 @@ Scheme system, C compiler,
 if you don't want to generate QR codes.
 
 NOTE that some of the libraries from chj-schemelib might only work on
-Linux (you'll get compilation or test failures in the next
-section). Contact [me](http://christianjaeger.ch/contact.html) if
-that's the case.
+Linux (you'll get compilation or test failures in the next section if
+that's the case). Contact [me](http://christianjaeger.ch/contact.html)
+if this happens.
 
 
 ## Installation of vcard-scm
@@ -43,8 +46,9 @@ that's the case.
     $ ./run
 
 This will (when run for the first time) compile all of the used
-libraries in lib/, and hence be slow. Ignore the warnings. Enter the
-following at the "`>` " prompt to run the test suite:
+libraries in lib/, and hence take a few minutes. Ignore the
+warnings. Once the "`>` " prompt appears, enter the following to run
+the test suite:
 
     (run-tests)
 
@@ -74,31 +78,32 @@ If you want to keep track of your vcard definition(s) in a separate
 Git repository, do the following:
 
     $ cd ..
-    $ git init myrepo
-    $ cd myrepo
+    $ git init myvcard
+    $ cd myvcard
     $ ln -s ../vcard-scm/.gambcini
+    $ ln -s ../vcard-scm/run
     $ mkdir .gambc
     $ cat > .gambc/load.scm # then paste the following:
 
     (parameterize ((current-directory "../vcard-scm"))
 		  (load ".gambc/load.scm"))
 
-    (load "my.scm")
+    (load "me.scm")
 
 hit ctl-d, 
 
-    $ touch my.scm
+    $ touch me.scm
     $ git add . ; git commit -m "start"
     $ ./run
 
-open my.scm, add your definition, then
+open me.scm, add your definition, then
 
-    > (lo) ;; this reloads things
-    > (printcard "my" my)
+    > (lo) ;; reload modified files
+    > (printcard "me" (me)) ;; pass whatever arguments `me` was defined for
 
 ## Enjoy..
 
-..and send me email to the address in the card written by
+..and send me email to the address in the card show by
 
     > (display (cjcard))
     > (printcard "cjcard" (cjcard))
