@@ -24,7 +24,6 @@
   ;; not seen anywhere by author, probably won't work:
   bare-fingerprint)
 
-
 (defenum tel-preferred
   home
   mobile
@@ -34,7 +33,7 @@
   home
   work)
 
-;; vcard-easy-struct just captures the arguments
+;; vcard-easy-struct captures the vcard-easy-string arguments
 (defstruct vcard-easy-struct
   #!key
   #((maybe unixtime?) unixtime)
@@ -86,7 +85,64 @@
   (#((either string? openpgp-source?) openpgp-source) 'keyserver))
 
 
-;; vcard-easy-string converts to vcard immediately
+(def. (vcard-easy-struct.vcard-name v)
+  (vcard-name family-name: (.family-name v)
+	      given-name: (.given-name v)
+	      additional-names: (.additional-names v)
+	      honorific: (.honorific v)
+	      prefixes: (.prefixes v)
+	      honorific-suffixes: (.honorific-suffixes v)))
+
+(def. (vcard-easy-struct.url v)
+  (or (.url-personal v) (.url-work v)))
+
+(def. (vcard-easy-struct.openpgp-fingerprint-nospaces v)
+  (let. ((openpgp-fingerprint) v)
+	(and openpgp-fingerprint
+	     (string.replace-substrings openpgp-fingerprint " " ""))))
+
+(def. (vcard-easy-struct.maybe-KEY v)
+  (let. ((small? openpgp-source openpgp-fingerprint url) v)
+	;; I haven't seen KEY used by the apps I tested with, so only
+	;; generate when big is fine.
+	(and
+	 (not small?)
+	 (if (string? openpgp-source)
+	     (KEY (vcard-uri openpgp-source) TYPE: 'PGP)
+	     (and openpgp-fingerprint
+		  (xcase
+		   openpgp-source
+		   ((keyserver)
+		    (KEY (vcard-uri
+			  (string-append
+			   "https://pgp.mit.edu/pks/lookup?op=get&search=0x"
+			   openpgp-fingerprint-nospaces))
+			 TYPE: 'PGP))
+		   ((url)
+		    (if url
+			(KEY (vcard-uri (string-append
+					 url
+					 "pgpkey-"
+					 (string.replace-substrings
+					  openpgp-fingerprint
+					  " " "-")
+					 ".asc"))
+			     TYPE: 'PGP)
+			(error (string-append
+				"asking openpgp-source 'url, but neither"
+				" url-personal nor url-work given"))))
+		   ((bare-fingerprint)
+		    (warn* (string-append
+			    "embedding fingerprint directly: it is unknown"
+			    " to the author of this library whether this"
+			    " will work anywhere. Alternatives recommended."))
+		    (KEY openpgp-fingerprint-nospaces
+			 ;; give that same type?
+			 TYPE: 'PGP))))))))
+
+
+
+;; convert arguments to vcard string
 (def (vcard-easy-string . arguments)
      (let ((v (apply vcard-easy-struct arguments)))
        (let.
@@ -95,7 +151,9 @@
 	  openpgp-fingerprint tel-home tel-mobile tel-work
 	  email tz title role logo photo org note url-personal url-work
 	  note-address-home? note-address-work? address-home address-work
-	  small? public? unixtime uid openpgp-source)
+	  small? public? unixtime uid openpgp-source
+	  ;; and the result of some methods, too:
+	  vcard-name url)
 	 v)
 
 	(let ((perhaps
@@ -113,29 +171,16 @@
 
 	      (address-prefer (prefer/ address-preferred? address-preferred))
 
-	      (tel-prefer (prefer/ tel-preferred? (.tel-preferred v)))
-
-	      (url (or (.url-personal v) (.url-work v)))
-
-	      (openpgp-fingerprint-nospaces
-	       (and openpgp-fingerprint
-		    (string.replace-substrings openpgp-fingerprint " " "")))
-
-	      (name (vcard-name family-name: (.family-name v)
-				given-name: (.given-name v)
-				additional-names: (.additional-names v)
-				honorific: (.honorific v)
-				prefixes: (.prefixes v)
-				honorific-suffixes: (.honorific-suffixes v))))
+	      (tel-prefer (prefer/ tel-preferred? (.tel-preferred v))))
      
 	  (string-append
 	   (.vcard-string
 	    (VCARD
 
 	     (and (.generate-FN? v)
-		  (FN (.FN-string name)))
+		  (FN (.FN-string vcard-name)))
 
-	     (N name)
+	     (N vcard-name)
 
 	     (perhaps NICKNAME (.nickname v))
 
@@ -225,49 +270,14 @@
 	     (and (not small?)
 		  (CLASS (If public? "PUBLIC" "PRIVATE")))
 
-	     ;; I haven't seen KEY used by the apps I tested with, so only
-	     ;; generate when big is fine.
-	     (and
-	      (not small?)
-	      (if (string? openpgp-source)
-		  (KEY (vcard-uri openpgp-source) TYPE: 'PGP)
-		  (and openpgp-fingerprint
-		       (xcase
-			openpgp-source
-			((keyserver)
-			 (KEY (vcard-uri
-			       (string-append
-				"https://pgp.mit.edu/pks/lookup?op=get&search=0x"
-				openpgp-fingerprint-nospaces))
-			      TYPE: 'PGP))
-			((url)
-			 (if url
-			     (KEY (vcard-uri (string-append
-					      url
-					      "pgpkey-"
-					      (string.replace-substrings
-					       openpgp-fingerprint
-					       " " "-")
-					      ".asc"))
-				  TYPE: 'PGP)
-			     (error (string-append
-				     "asking openpgp-source 'url, but neither"
-				     " url-personal nor url-work given"))))
-			((bare-fingerprint)
-			 (warn* (string-append
-				 "embedding fingerprint directly: it is unknown"
-				 " to the author of this library whether this"
-				 " will work anywhere. Alternatives recommended."))
-			 (KEY openpgp-fingerprint-nospaces
-			      ;; give that same type?
-			      TYPE: 'PGP))))))))
+	     (.maybe-KEY v)))
 
 	   ;; *after* the VCARD, add field for Monkeysign (untested!)
 	   ;; (omit in small mode?)
 	   (if openpgp-fingerprint
 	       (string-append
 		vcard-eol
-		"OPENPGP4FPR:" openpgp-fingerprint-nospaces vcard-eol)
+		"OPENPGP4FPR:" (.openpgp-fingerprint-nospaces v) vcard-eol)
 	       ""))))))
 
 
