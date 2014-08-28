@@ -34,219 +34,229 @@
   home
   work)
 
-(def (vcard-easy-string
-      #!key
-      #((maybe unixtime?) unixtime)
-      ;; turn off non-essential output that can't otherwise be omitted
-      ;; by user:
-      small? 
-      public?
-      #(string? family-name)
-      #(string? given-name)
-      #(improper-list-of-maybe-string? additional-names)
-      #(improper-list-of-maybe-string? honorific)
-      #(improper-list-of-maybe-string? prefixes)
-      #(improper-list-of-maybe-string? honorific-suffixes)
-      #(improper-list-of-maybe-string? nickname)
-      ;; A version 3 vcard requires FN, generate it by default. This
-      ;; can experimentally be turned off. Note that one of the "QR
-      ;; Droid" apps exits with an error if this is off! And it
-      ;; doesn't actually help any of the apps feed first and last
-      ;; names correctly to the contact app anyway (perhaps really an
-      ;; Android problem?).
-      (#(boolean? generate-FN?) #t)
-      tel-home
-      tel-mobile
-      tel-work
-      #((maybe tel-preferred?) tel-preferred)
-      #((maybe vcard-address?) address-home)
-      #((maybe vcard-address?) address-work)
-      #((maybe address-preferred?) address-preferred)
-      ;; whether to add a copy of the addresses in the NOTE field as
-      ;; plain text, for the (many? most?) clients that don't handle
-      ;; addresses nicely:
-      (#(boolean? note-address-home?) #t)
-      (#(boolean? note-address-work?) #t)
-      email
-      tz
-      title
-      role
-      #((maybe LOGO?) logo) ;; look for LOGO in vcard.scm and examples.scm
-      #((maybe PHOTO?) photo) ;; look for PHOTO in vcard.scm and examples.scm
-      org
-      ;; A note that will be prepended (with a newline) to some other
-      ;; auto-generated parts:
-      note
-      uid
-      url-personal
-      url-work
-      ;; OpenPGP fingerprint, preferably with spaces:
-      openpgp-fingerprint
-      (#((either string? openpgp-source?) openpgp-source) 'keyserver))
+(insert-result-of
+ (def arguments
+      (quote-source-list
+       #!key
+       #((maybe unixtime?) unixtime)
+       ;; turn off non-essential output that can't otherwise be omitted
+       ;; by user:
+       small? 
+       public?
+       #(string? family-name)
+       #(string? given-name)
+       #(improper-list-of-maybe-string? additional-names)
+       #(improper-list-of-maybe-string? honorific)
+       #(improper-list-of-maybe-string? prefixes)
+       #(improper-list-of-maybe-string? honorific-suffixes)
+       #(improper-list-of-maybe-string? nickname)
+       ;; A version 3 vcard requires FN, generate it by default. This
+       ;; can experimentally be turned off. Note that one of the "QR
+       ;; Droid" apps exits with an error if this is off! And it
+       ;; doesn't actually help any of the apps feed first and last
+       ;; names correctly to the contact app anyway (perhaps really an
+       ;; Android problem?).
+       (#(boolean? generate-FN?) #t)
+       tel-home
+       tel-mobile
+       tel-work
+       #((maybe tel-preferred?) tel-preferred)
+       #((maybe vcard-address?) address-home)
+       #((maybe vcard-address?) address-work)
+       #((maybe address-preferred?) address-preferred)
+       ;; whether to add a copy of the addresses in the NOTE field as
+       ;; plain text, for the (many? most?) clients that don't handle
+       ;; addresses nicely:
+       (#(boolean? note-address-home?) #t)
+       (#(boolean? note-address-work?) #t)
+       email
+       tz
+       title
+       role
+       #((maybe LOGO?) logo) ;; look for LOGO in vcard.scm and examples.scm
+       #((maybe PHOTO?) photo) ;; look for PHOTO in vcard.scm and examples.scm
+       org
+       ;; A note that will be prepended (with a newline) to some other
+       ;; auto-generated parts:
+       note
+       uid
+       url-personal
+       url-work
+       ;; OpenPGP fingerprint, preferably with spaces:
+       openpgp-fingerprint
+       (#((either string? openpgp-source?) openpgp-source) 'keyserver)))
+ 
+ (quasiquote-source
+  (begin
+    ;; vcard-easy-struct just captures the arguments
+    (defstruct vcard-easy-struct ,@arguments)
 
-     (def (perhaps constr . vals)
-	  (and (every identity vals)
-	       (apply constr vals)))
-     (def (order-preferred-address-home+work h w)
-	  (if address-preferred
-	      (xcase address-preferred
-		     ((home) (list h w))
-		     ((work) (list w h)))
-	      (list h w)))
-     (def address-prefer (prefer/ address-preferred? address-preferred))
-     (def tel-prefer (prefer/ tel-preferred? tel-preferred))
-     (def url (or url-personal url-work))
-     (def openpgp-fingerprint-nospaces
-	  (and openpgp-fingerprint
-	       (string.replace-substrings openpgp-fingerprint " " "")))
-     (def name (vcard-name family-name: family-name
-			   given-name: given-name
-			   additional-names: additional-names
-			   honorific: honorific
-			   prefixes: prefixes
-			   honorific-suffixes: honorific-suffixes))
+    ;; vcard-easy-string converts to vcard immediately
+    (def (vcard-easy-string ,@arguments)
+
+	 (def (perhaps constr . vals)
+	      (and (every identity vals)
+		   (apply constr vals)))
+	 (def (order-preferred-address-home+work h w)
+	      (if address-preferred
+		  (xcase address-preferred
+			 ((home) (list h w))
+			 ((work) (list w h)))
+		  (list h w)))
+	 (def address-prefer (prefer/ address-preferred? address-preferred))
+	 (def tel-prefer (prefer/ tel-preferred? tel-preferred))
+	 (def url (or url-personal url-work))
+	 (def openpgp-fingerprint-nospaces
+	      (and openpgp-fingerprint
+		   (string.replace-substrings openpgp-fingerprint " " "")))
+	 (def name (vcard-name family-name: family-name
+			       given-name: given-name
+			       additional-names: additional-names
+			       honorific: honorific
+			       prefixes: prefixes
+			       honorific-suffixes: honorific-suffixes))
      
-     (string-append
-      (.vcard-string
-       (VCARD
+	 (string-append
+	  (.vcard-string
+	   (VCARD
 
-	(and generate-FN?
-	     (FN (.FN-string name)))
+	    (and generate-FN?
+		 (FN (.FN-string name)))
 
-	(N name)
+	    (N name)
 
-	(perhaps NICKNAME nickname)
+	    (perhaps NICKNAME nickname)
 
-	;; Somehow both "QR Droid" and "Scan" will squash all of the
-	;; address into the "Street" field of the contact app; not my
-	;; fault I guess. Also, both apps will only use the first
-	;; address and ignore the second, thus look at
-	;; address-preferred to output the preferred one first. (Also,
-	;; add the addresses to the NOTE field, too, by default.)
-	(order-preferred-address-home+work
-	 (perhaps ADR address-home TYPE: (address-prefer 'home '(home <pref>)))
-	 (perhaps ADR address-work TYPE: (address-prefer 'work '(work <pref>))))
-	;; dom vs. intl, postal.. ? Well this is called 'easy', aka simple.
+	    ;; Somehow both "QR Droid" and "Scan" will squash all of the
+	    ;; address into the "Street" field of the contact app; not my
+	    ;; fault I guess. Also, both apps will only use the first
+	    ;; address and ignore the second, thus look at
+	    ;; address-preferred to output the preferred one first. (Also,
+	    ;; add the addresses to the NOTE field, too, by default.)
+	    (order-preferred-address-home+work
+	     (perhaps ADR address-home TYPE: (address-prefer 'home '(home <pref>)))
+	     (perhaps ADR address-work TYPE: (address-prefer 'work '(work <pref>))))
+	    ;; dom vs. intl, postal.. ? Well this is called 'easy', aka simple.
 
-	;; The "QR Droid" app on Android completely ignores the TYPE,
-	;; and strictly uses the encountered TEL entries as Home,
-	;; Mobile, Work in order. Hence, do not use |perhaps| here,
-	;; instead output "-" entries (the empty string wouldn't do
-	;; either).  (The "Scan" Android app does not have this
-	;; problem and actually respects the TYPE values. But note
-	;; that this app will add the number as "Work" if both 'home
-	;; and 'work are specified; thus keep them purely separate
-	;; here.)
-	(and (or tel-home tel-mobile tel-work)
-	     (TEL (or tel-home "-")
-		  TYPE: (tel-prefer 'home '(home <pref> msg voice))))
-	(and (or tel-mobile tel-work)
-	     (TEL (or tel-mobile "-")
-		  TYPE: (tel-prefer 'mobile '(cell <pref> pcs voice))))
-	(and (or tel-work)
-	     (TEL tel-work
-		  TYPE: (tel-prefer 'work '(work <pref> msg voice))))
-	;; ^ omit the msg pcs voice stuff in small mode?
+	    ;; The "QR Droid" app on Android completely ignores the TYPE,
+	    ;; and strictly uses the encountered TEL entries as Home,
+	    ;; Mobile, Work in order. Hence, do not use |perhaps| here,
+	    ;; instead output "-" entries (the empty string wouldn't do
+	    ;; either).  (The "Scan" Android app does not have this
+	    ;; problem and actually respects the TYPE values. But note
+	    ;; that this app will add the number as "Work" if both 'home
+	    ;; and 'work are specified; thus keep them purely separate
+	    ;; here.)
+	    (and (or tel-home tel-mobile tel-work)
+		 (TEL (or tel-home "-")
+		      TYPE: (tel-prefer 'home '(home <pref> msg voice))))
+	    (and (or tel-mobile tel-work)
+		 (TEL (or tel-mobile "-")
+		      TYPE: (tel-prefer 'mobile '(cell <pref> pcs voice))))
+	    (and (or tel-work)
+		 (TEL tel-work
+		      TYPE: (tel-prefer 'work '(work <pref> msg voice))))
+	    ;; ^ omit the msg pcs voice stuff in small mode?
       
-	(perhaps EMAIL email)
-	;; can't say work etc. here; TYPE is just for internet vs. others
+	    (perhaps EMAIL email)
+	    ;; can't say work etc. here; TYPE is just for internet vs. others
 
-	(perhaps TZ tz)	;; hmm what about summer time??
+	    (perhaps TZ tz) ;; hmm what about summer time??
 
-	(perhaps TITLE title) ;; used by both "Scan" and "QR Droid"
-	(perhaps ROLE role)   ;; not used by either app
+	    (perhaps TITLE title) ;; used by both "Scan" and "QR Droid"
+	    (perhaps ROLE role)   ;; not used by either app
 
-	logo
-	photo
+	    logo
+	    photo
 
-	(perhaps ORG org)
+	    (perhaps ORG org)
 
-	(perhaps NOTE (maybe-strings-join
-		       (flatten*
-			(list
-			 note
-			 (maybe-string-append "OpenPGP ID/fingerprint: "
-					      openpgp-fingerprint)
-			 (maybe-string-append "Personal: " url-personal)
-			 (maybe-string-append "Work: " url-work)
+	    (perhaps NOTE (maybe-strings-join
+			   (flatten*
+			    (list
+			     note
+			     (maybe-string-append "OpenPGP ID/fingerprint: "
+						  openpgp-fingerprint)
+			     (maybe-string-append "Personal: " url-personal)
+			     (maybe-string-append "Work: " url-work)
 
-			 (order-preferred-address-home+work
-			  (and note-address-home? address-home
-			       (string-append "Home address:\n"
-					      (.pretty-string address-home)))
-			  (and note-address-work? address-work
-			       (string-append "Work address:\n"
-					      (.pretty-string address-work))))))
-		       "\n"))
+			     (order-preferred-address-home+work
+			      (and note-address-home? address-home
+				   (string-append "Home address:\n"
+						  (.pretty-string address-home)))
+			      (and note-address-work? address-work
+				   (string-append "Work address:\n"
+						  (.pretty-string address-work))))))
+			   "\n"))
 
-	(and (not small?)
-	     (PRODID "https://github.com/pflanze/vcard-scm"))
+	    (and (not small?)
+		 (PRODID "https://github.com/pflanze/vcard-scm"))
 
-	(REV ((if (and public? (not small?))
-		  .vcard-date-time
-		  .vcard-date)
-	      (if unixtime
-		  (unixtime.gmtime unixtime)
-		  (current-gmtime))))
+	    (REV ((if (and public? (not small?))
+		      .vcard-date-time
+		      .vcard-date)
+		  (if unixtime
+		      (unixtime.gmtime unixtime)
+		      (current-gmtime))))
 
-	;;(SOUND )
+	    ;;(SOUND )
 
-	(perhaps UID uid)
-	;; uid is perhaps used by some apps for updating previously
-	;; stored contacts (avoiding duplicates)?
+	    (perhaps UID uid)
+	    ;; uid is perhaps used by some apps for updating previously
+	    ;; stored contacts (avoiding duplicates)?
 
-	(and url
-	     (URL (vcard-uri url)))
+	    (and url
+		 (URL (vcard-uri url)))
 
-	;; Do apps actually respect this setting? OK to omit it in
-	;; |small?| case?
-	(and (not small?)
-	     (CLASS (If public? "PUBLIC" "PRIVATE")))
+	    ;; Do apps actually respect this setting? OK to omit it in
+	    ;; |small?| case?
+	    (and (not small?)
+		 (CLASS (If public? "PUBLIC" "PRIVATE")))
 
-	;; I haven't seen KEY used by the apps I tested with, so only
-	;; generate when big is fine.
-	(and
-	 (not small?)
-	 (if (string? openpgp-source)
-	     (KEY (vcard-uri openpgp-source) TYPE: 'PGP)
-	     (and openpgp-fingerprint
-		  (xcase
-		   openpgp-source
-		   ((keyserver)
-		    (KEY (vcard-uri
-			  (string-append
-			   "https://pgp.mit.edu/pks/lookup?op=get&search=0x"
-			   openpgp-fingerprint-nospaces))
-			 TYPE: 'PGP))
-		   ((url)
-		    (if url
-			(KEY (vcard-uri (string-append
-					 url
-					 "pgpkey-"
-					 (string.replace-substrings
-					  openpgp-fingerprint
-					  " " "-")
-					 ".asc"))
-			     TYPE: 'PGP)
-			(error (string-append
-				"asking openpgp-source 'url, but neither"
-				" url-personal nor url-work given"))))
-		   ((bare-fingerprint)
-		    (warn* (string-append
-			    "embedding fingerprint directly: it is unknown"
-			    " to the author of this library whether this"
-			    " will work anywhere. Alternatives recommended."))
-		    (KEY openpgp-fingerprint-nospaces
-			 ;; give that same type?
-			 TYPE: 'PGP))))))))
+	    ;; I haven't seen KEY used by the apps I tested with, so only
+	    ;; generate when big is fine.
+	    (and
+	     (not small?)
+	     (if (string? openpgp-source)
+		 (KEY (vcard-uri openpgp-source) TYPE: 'PGP)
+		 (and openpgp-fingerprint
+		      (xcase
+		       openpgp-source
+		       ((keyserver)
+			(KEY (vcard-uri
+			      (string-append
+			       "https://pgp.mit.edu/pks/lookup?op=get&search=0x"
+			       openpgp-fingerprint-nospaces))
+			     TYPE: 'PGP))
+		       ((url)
+			(if url
+			    (KEY (vcard-uri (string-append
+					     url
+					     "pgpkey-"
+					     (string.replace-substrings
+					      openpgp-fingerprint
+					      " " "-")
+					     ".asc"))
+				 TYPE: 'PGP)
+			    (error (string-append
+				    "asking openpgp-source 'url, but neither"
+				    " url-personal nor url-work given"))))
+		       ((bare-fingerprint)
+			(warn* (string-append
+				"embedding fingerprint directly: it is unknown"
+				" to the author of this library whether this"
+				" will work anywhere. Alternatives recommended."))
+			(KEY openpgp-fingerprint-nospaces
+			     ;; give that same type?
+			     TYPE: 'PGP))))))))
 
-      ;; *after* the VCARD, add field for Monkeysign (untested!)
-      ;; (omit in small mode?)
-      (if openpgp-fingerprint
-	  (string-append
-	   vcard-eol
-	   "OPENPGP4FPR:" openpgp-fingerprint-nospaces vcard-eol)
-	  "")))
+	  ;; *after* the VCARD, add field for Monkeysign (untested!)
+	  ;; (omit in small mode?)
+	  (if openpgp-fingerprint
+	      (string-append
+	       vcard-eol
+	       "OPENPGP4FPR:" openpgp-fingerprint-nospaces vcard-eol)
+	      ""))))))
 
 
 ;; definitions used in the above:
@@ -293,5 +303,14 @@
 
 (TEST
  > (%try-error (vcard-easy-string given-name: "C" ))
- #(error "family-name does not match string?:" #f))
+ #(error "family-name does not match string?:" #f)
+ > (.given-name (vcard-easy-struct family-name: "foo" given-name: "bar"))
+ "bar"
+ > (.note-address-home?
+    (vcard-easy-struct family-name: "foo" given-name: "bar"))
+ #t
+ > (.note-address-home?
+    (vcard-easy-struct family-name: "foo" given-name: "bar"
+		       note-address-home?: #f))
+ #f)
 
