@@ -338,3 +338,14 @@
 		       note-address-home?: #f))
  #f)
 
+
+;; used by third party programs:
+
+(def. (vcard-easy-struct.name-string c)
+  (.FN-string (.vcard-name c)))
+
+(def. (vcard-easy-struct.openpgp-url-string c)
+  (let. ((maybe-KEY) c)
+	(and maybe-KEY
+	     (vcard-uri.value (KEY.value maybe-KEY)))))
+
