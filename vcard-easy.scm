@@ -102,7 +102,8 @@
 	     (string.replace-substrings openpgp-fingerprint " " ""))))
 
 (def. (vcard-easy-struct.maybe-KEY v)
-  (let. ((small? openpgp-source openpgp-fingerprint url) v)
+  (let. ((small? openpgp-source openpgp-fingerprint
+		 openpgp-fingerprint-nospaces url) v)
 	;; I haven't seen KEY used by the apps I tested with, so only
 	;; generate when big is fine.
 	(and
