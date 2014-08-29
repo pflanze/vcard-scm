@@ -31,4 +31,6 @@
       public?:
       #t
       openpgp-fingerprint:
-      "B222 CF68 5BF6 054D 0211  97CB 08FE FD1B 3039 B4ED"))
+      "B222 CF68 5BF6 054D 0211  97CB 08FE FD1B 3039 B4ED"
+      show-time-in-timestamp?:
+      #f))
