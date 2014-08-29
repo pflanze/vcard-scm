@@ -185,7 +185,7 @@
 	     (and openpgp-fingerprint
 		  (X-OPENPGPFPR
 		   (.openpgp-fingerprint-nospaces v)
-		   VERSION: (.openpgp-version v)))
+		   V: (.openpgp-version v)))
 
 	     (and (.generate-FN? v)
 		  (FN (.FN-string vcard-name)))

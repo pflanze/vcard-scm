@@ -970,7 +970,7 @@
 	     "generated for; it is optional but might help against "
 	     "downgrading attacks when it turns out that keys for older "
 	     "versions can be generated with identical fingerprints.")
-	    #((maybe natural?) VERSION)
+	    #((maybe natural?) V)
 	    #(string? value))))))
 
    (no-pp-through-source ;; remove the no- to see the generated code
