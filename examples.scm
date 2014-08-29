@@ -108,5 +108,5 @@
 (TEST
  > (print-file "example2.vcd" (example2 #f 0))
  > (backtick "md5sum" "example2.vcd")
- "58c406ed1dd5deb6eca53b0635fe0e69  example2.vcd")
+ "2800c465c83246ed74891af3907542d0  example2.vcd")
 

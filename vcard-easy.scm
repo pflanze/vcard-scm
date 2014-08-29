@@ -81,7 +81,8 @@
   url-personal
   url-work
   ;; OpenPGP fingerprint, preferably with spaces:
-  openpgp-fingerprint
+  #((maybe string?) openpgp-fingerprint)
+  (#(natural? openpgp-version) 4) ;; only report full versions, ok?
   (#((either string? openpgp-source?) openpgp-source) 'keyserver))
 
 
@@ -178,6 +179,14 @@
 	   (.vcard-string
 	    (VCARD
 
+	     ;; field for Monkeysign (untested!). Put it first in the
+	     ;; output so that it will be found first by Monkeysign's
+	     ;; regex.  (XX omit in small mode?)
+	     (and openpgp-fingerprint
+		  (X-OPENPGPFPR
+		   (.openpgp-fingerprint-nospaces v)
+		   VERSION: (.openpgp-version v)))
+
 	     (and (.generate-FN? v)
 		  (FN (.FN-string vcard-name)))
 
@@ -271,15 +280,7 @@
 	     (and (not small?)
 		  (CLASS (If public? "PUBLIC" "PRIVATE")))
 
-	     (.maybe-KEY v)))
-
-	   ;; *after* the VCARD, add field for Monkeysign (untested!)
-	   ;; (omit in small mode?)
-	   (if openpgp-fingerprint
-	       (string-append
-		vcard-eol
-		"OPENPGP4FPR:" (.openpgp-fingerprint-nospaces v) vcard-eol)
-	       ""))))))
+	     (.maybe-KEY v))))))))
 
 
 
