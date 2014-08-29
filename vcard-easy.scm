@@ -41,6 +41,7 @@
   ;; by user:
   small? 
   public?
+  (#(boolean? show-time-in-timestamp?) (and public? (not small?)))
   #(string? family-name)
   #(string? given-name)
   #(improper-list-of-maybe-string? additional-names)
@@ -259,7 +260,7 @@
 	     (and (not small?)
 		  (PRODID "https://github.com/pflanze/vcard-scm"))
 
-	     (REV ((if (and public? (not small?))
+	     (REV ((if (.show-time-in-timestamp? v)
 		       .vcard-date-time
 		       .vcard-date)
 		   (if unixtime
