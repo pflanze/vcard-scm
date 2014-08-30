@@ -1,8 +1,8 @@
-# vcard-scm: VCard files from Scheme
+# vcard-scm: vCard files from Scheme
 
-This is currently just a VCard generator, not a parser.
+This is currently just a vCard generator, not a parser.
 
-* `vcard.scm`: the definition of the VCard file format.
+* `vcard.scm`: the definition of the vCard file format.
 
 * `vcard-easy.scm`: an abstraction that simplifies the data format of
   vcard a bit, and more importantly, tries to fill it into a vcard
