@@ -968,7 +968,7 @@
 	    ("An OpenPGP key fingerprint, preferably without spaces. "
 	     "VERSION specifies the OpenPGP major version the key was "
 	     "generated for; it is optional but might help against "
-	     "downgrading attacks when it turns out that keys for older "
+	     "downgrading attacks in case it turns out that keys for older "
 	     "versions can be generated with identical fingerprints.")
 	    #((maybe natural?) V)
 	    #(string? value))))))
