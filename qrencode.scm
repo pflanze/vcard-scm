@@ -10,10 +10,11 @@
 
 
 (def (print-QR/ . opts)
-     (lambda (filepath str)
+     (lambda (filepath str . more-opts)
        ;; echo str | qrencode .. -o filepath
-       (let ((p (open-output-process (list path: "qrencode"
-					   arguments: `(,@opts "-o" ,filepath)))))
+       (let ((p (open-output-process
+		 (list path: "qrencode"
+		       arguments: `(,@opts ,@more-opts "-o" ,filepath)))))
 	 (parameterize ((current-output-port p))
 		       (display str))
 	 (close-output-port p)
@@ -24,8 +25,8 @@
 (def print-QR-png-file (print-QR/ "-t" "PNG" "-s" "6"))
 
 
-(def (showQR #(string? str))
+(def (showQR #(string? str) . opts)
      (let ((path "showQR.png"))
-       (print-QR-png-file path str)
+       (apply print-QR-png-file path str opts)
        (xxsystem "display" path)))
 

@@ -69,11 +69,16 @@ again:
     > (display (example2 #f)) ;; false for private, 
     > (display (example2 #t)) ;; true for public
     > (showQR (example2 #f)) ;; show QR code on screen
+    > (showQR (example2 #f) "-s" "3") ;; man qrencode: 3 pixels per dot
 
 To write it out as .vcd and QR code files in the current working
 directory:
 
     > (printcard "example2" (example2 #f))
+
+(or use the more lowlevel procedures from qrencode.scm like: )
+
+    > (print-QR-eps-file "examp.eps" (example2 #f))
 
 
 ## Usage from own repo
