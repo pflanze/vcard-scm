@@ -16,10 +16,8 @@
       (unhide "2DD279ACE820201DBC08251148218B2F08F3814F5C" 500 13/11)
       tz:
       "+00:00"
-      title:
-      "president"
       role:
-      "president, CTO"
+      "president"
       org:
       "Leaf Pair Ltd."
       uid:
@@ -32,5 +30,7 @@
       #t
       openpgp-fingerprint:
       "B222 CF68 5BF6 054D 0211  97CB 08FE FD1B 3039 B4ED"
+      openpgp-source:
+      url
       show-time-in-timestamp?:
       #f))
