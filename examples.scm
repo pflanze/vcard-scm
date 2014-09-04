@@ -98,11 +98,14 @@
       ))
 
 
-(def (printcard basepath str . opts)
+(def (printcard-QR basepath str . opts)
      (let ((path+ (C string-append basepath _)))
-       (print-file (path+ ".vcd") str)
        (apply print-QR-eps-file (path+ ".eps") str opts)
        (apply print-QR-png-file (path+ ".png") str opts)))
+
+(def (printcard basepath str . opts)
+     (print-file (string-append basepath ".vcd") str)
+     (apply printcard-QR basepath str opts))
 
 
 (TEST
