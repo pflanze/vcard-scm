@@ -69,6 +69,7 @@
   ;; only needed at runtime (when running the tests)
   (c/load "lib/lazy-debug")
 
+  (c/load "lib/local-test")
   (c/load "lib/string-util-2")
 
   (c/load "lib/cj-ffi")
@@ -94,8 +95,6 @@
   (c/load "lib/cj-io-util")
   (i/load "lib/cj-path")
 
-  (c/load "lib/cj-posixpath") ;; for nonempty-string?
-
   (c/load "lib/enum")
   (c/load "lib/easy")
   (c/load "lib/code-map")
@@ -105,6 +104,7 @@
   (i/load "lib/tree-util")
 
   (i/load "lib/more-oo")
+  (c/load "lib/cj-posixpath")
 
   (c/load "lib/cj-url-encode")
   (c/load "lib/hex")
