@@ -111,7 +111,7 @@
   (c/load "lib/hide"))
 
 (c/load "lib")
-(c/load "vcard")
+(i/load "vcard")
 (c/load "vcard-easy")
 (c/load "qrencode")
 (c/load "examples")
