@@ -87,6 +87,7 @@
   note
   uid
   #((maybe work-personal?) url-preferred)
+  #((maybe work-personal?) url-preferred-pgpkey)
   url-personal
   url-work
   ;; OpenPGP fingerprint, preferably with spaces:
@@ -103,13 +104,20 @@
 	      prefixes: (.prefixes v)
 	      honorific-suffixes: (.honorific-suffixes v)))
 
+(def (select-url v #(boolean? for-pgpkey?))
+     (xcase (or (and for-pgpkey?
+		     (vcard-easy-struct.url-preferred-pgpkey v))
+		(vcard-easy-struct.url-preferred v))
+	    ((personal) (.url-personal v))
+	    ((work) (.url-work v))
+	    ((#f)
+	     ;; randomly assume that personal is to be preferred?
+	     (or (.url-personal v) (.url-work v)))))
+
 (def. (vcard-easy-struct.url v)
-  (xcase (vcard-easy-struct.url-preferred v)
-	 ((personal) (.url-personal v))
-	 ((work) (.url-work v))
-	 ((#f)
-	  ;; randomly assume that personal is to be preferred?
-	  (or (.url-personal v) (.url-work v)))))
+  (select-url v #f))
+(def. (vcard-easy-struct.url-for-pgpkey v)
+  (select-url v #t))
 
 (def. (vcard-easy-struct.openpgp-fingerprint-nospaces v)
   (let. ((openpgp-fingerprint) v)
@@ -118,7 +126,7 @@
 
 (def. (vcard-easy-struct.maybe-KEY v)
   (let. ((small? openpgp-source openpgp-fingerprint
-		 openpgp-fingerprint-nospaces url) v)
+		 openpgp-fingerprint-nospaces url-for-pgpkey) v)
 	;; I haven't seen KEY used by the apps I tested with, so only
 	;; generate when big is fine.
 	(and
@@ -135,9 +143,9 @@
 			   openpgp-fingerprint-nospaces))
 			 TYPE: 'PGP))
 		   ((url)
-		    (if url
+		    (if url-for-pgpkey
 			(KEY (vcard-uri (string-append
-					 url
+					 url-for-pgpkey
 					 "pgpkey-"
 					 (string.replace-substrings
 					  openpgp-fingerprint
