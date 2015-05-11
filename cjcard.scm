@@ -26,6 +26,10 @@
       "Leaf Pair Ltd."
       uid:
       "fzfqz26bb5qn2getr3spcesyqc"
+      url-preferred:
+      personal
+      url-preferred-pgpkey:
+      personal
       url-personal:
       "http://christianjaeger.ch/"
       url-work:
