@@ -33,6 +33,13 @@
   home
   work)
 
+;; unlike home-work, which is location bound, this is not (or virtual
+;; location bound):
+(defenum work-personal
+  work
+  personal)
+
+
 ;; vcard-easy-struct captures the vcard-easy-string arguments
 (defstruct vcard-easy-struct
   #!key
@@ -79,6 +86,7 @@
   ;; auto-generated parts:
   note
   uid
+  #((maybe work-personal?) url-preferred)
   url-personal
   url-work
   ;; OpenPGP fingerprint, preferably with spaces:
@@ -96,7 +104,12 @@
 	      honorific-suffixes: (.honorific-suffixes v)))
 
 (def. (vcard-easy-struct.url v)
-  (or (.url-personal v) (.url-work v)))
+  (xcase (vcard-easy-struct.url-preferred v)
+	 ((personal) (.url-personal v))
+	 ((work) (.url-work v))
+	 ((#f)
+	  ;; randomly assume that personal is to be preferred?
+	  (or (.url-personal v) (.url-work v)))))
 
 (def. (vcard-easy-struct.openpgp-fingerprint-nospaces v)
   (let. ((openpgp-fingerprint) v)
