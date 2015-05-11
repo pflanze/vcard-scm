@@ -8,12 +8,16 @@
       "Christian"
       family-name:
       "Jaeger"
+      nickname:
+      "pflanze"
       tel-home:
       #f
       tel-mobile:
       #f
       email:
       (unhide "2DD279ACE820201DBC08251148218B2F08F3814F5C" 500 13/11)
+      address-work:
+      #f
       tz:
       "+00:00"
       role:
