@@ -37,7 +37,7 @@
       public?:
       #t
       openpgp-fingerprint:
-      "B222 CF68 5BF6 054D 0211  97CB 08FE FD1B 3039 B4ED"
+      "A54A 1D7C A1F9 4C86 6AC8  1A1F 0FA5 B211 04ED B072"
       openpgp-source:
       url
       show-time-in-timestamp?:
