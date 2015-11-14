@@ -264,7 +264,7 @@
 			    (flatten*
 			     (list
 			      note
-			      (maybe-string-append "OpenPGP ID/fingerprint: "
+			      (maybe-string-append "OpenPGP fingerprint: "
 						   openpgp-fingerprint)
 			      (maybe-string-append "Personal: " url-personal)
 			      (maybe-string-append "Work: " url-work)
